@@ -1993,7 +1993,6 @@ public abstract class Model<M extends Model<M,P,O>, P extends Model.Parameters, 
     for (InteractionPair ip : interactions) {
       interactionNames[idx] = fr.name(ip._v1) + "_" + fr.name(ip._v2);
       InteractionWrappedVec iwv =new InteractionWrappedVec(anyTrainVec.group().addVec(), anyTrainVec._rowLayout, ip._v1Enums, ip._v2Enums, useAllFactorLevels, skipMissing, standardize, fr.vec(ip._v1)._key, fr.vec(ip._v2)._key);
-//      if(!valid) ip.setDomain(iwv.domain());
       interactionVecs[idx++] = iwv;
     }
     return new Frame(interactionNames, interactionVecs);
@@ -2029,7 +2028,6 @@ public abstract class Model<M extends Model<M,P,O>, P extends Model.Parameters, 
     public int vecIdx;
     private int _v1,_v2;
 
-    private String[] _domain; // not null for enum-enum interactions
     private String[] _v1Enums;
     private String[] _v2Enums;
     private int _hash;
@@ -2082,25 +2080,6 @@ public abstract class Model<M extends Model<M,P,O>, P extends Model.Parameters, 
         for(int j=i+1;j<indexes.length;++j)
           res[idx++] = new InteractionPair(indexes[i],indexes[j],null,null);
       return res;
-    }
-
-    /**
-     * Set the domain; computed in an MRTask over the two categorical vectors that make
-     * up this interaction pair
-     * @param dom The domain retrieved by the CombineDomainTask in InteractionWrappedVec
-     */
-    public void setDomain(String[] dom) { _domain=dom; }
-
-    /**
-     * Check to see if any of the vecIdx values is the desired value.
-     */
-    public static int isInteraction(int i, InteractionPair[] ips) {
-      int idx = 0;
-      for (InteractionPair ip: ips) {
-        if (i == ip.vecIdx) return idx;
-        else               idx++;
-      }
-      return -1;
     }
 
     @Override public int hashCode() { return _hash; }
